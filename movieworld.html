@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie world</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        .body {
+            background-image: url('https://wallpapers.com/images/hd/netflix-background-gs7hjuwvv2g0e9fj.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .container-2 {
+            color: antiquewhite;
+            font-size: 2cm;
+        }
+    </style>
+</head>
+
+<body class="body">
+    <center>
+        <div class="container">
+            <p class="container-2">Unlimited movies, TV shows and more</p>
+            <h3 style="color: antiquewhite;">Watch anywhere. Cancel anytime.</h3>
+            <label style="color: antiquewhite; font-size: x-large;" for="searchInput">Search here for the movies</label>
+            <input class="form-control mr-sm-2" type="search" id="searchInput" placeholder="search here"
+                aria-label="Search" style="max-width: 700px; min-width: 200px;">
+            <br>
+            <button class="btn btn-success my-2 my-sm-0" type="submit" onclick="searchIMDb()">Search</button>
+            <br>
+            <br>
+        </div>
+        <div class="row2">
+            <div id="results" class="container-3 row"
+                style="background-image: linear-gradient(rgb(158, 15, 15),grey,black); border-top: 1px black solid ;">
+                <div id="result2" class="container-4 row"
+                    style="background-image: linear-gradient(rgb(158, 15, 15),grey,black); margin: auto;"></div>
+
+            </div>
+        </div>
+    </center>
+    <!--PAGE 1-->
+    <script>
+        const data = null;
+
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === this.DONE) {
+                const data = JSON.parse(this.responseText);
+                displayResults2(data);
+                console.log(data);
+            }
+        });
+
+        xhr.open('GET', 'https://imdb146.p.rapidapi.com/v1/find/?query=harry%20potter');
+        xhr.setRequestHeader('X-RapidAPI-Key', '204b0b2611mshe649b213270d024p18515cjsnd3250a2a7578');
+        xhr.setRequestHeader('X-RapidAPI-Host', 'imdb146.p.rapidapi.com');
+
+        xhr.send(data);
+        function displayResults2(data) {
+            const resultsContainer2 = document.getElementById('result2');
+            resultsContainer2.innerHTML = '';
+            if (data) {
+                if (data.titleResults && data.titleResults.results.length > 0) {
+                    const titleResults = data.titleResults.results;
+                    titleResults.forEach(titleResult => {
+                        const cardDiv = document.createElement('div');
+                        cardDiv.classList.add('col-md-1', 'm-2', 'card');
+                        cardDiv.innerHTML = `
+                        ${titleResult.titlePosterImageModel && titleResult.titlePosterImageModel.url
+                                ? `<img class="bd-placeholder-img" src="${titleResult.titlePosterImageModel.url}" alt="${titleResult.titleNameText} Poster" style="height:300px; max-width:250px">`
+                                : 'No image available'}`
+                        cardDiv.style.height = '300px';
+                        cardDiv.style.minHeight = '250px';
+                        cardDiv.style.width = '250px';
+                        cardDiv.style.minWidth = '200px';
+                        cardDiv.style.position = 'center'
+                        cardDiv.style.backgroundColor = 'black';
+                        cardDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0)';
+                        cardDiv.style.transition = 'box-shadow 0.3s ease-in-out';
+                        // Add hover effect
+                        cardDiv.addEventListener('mouseenter', function () {
+                            cardDiv.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 5)';
+                        });
+                        cardDiv.addEventListener('mouseleave', function () {
+                            cardDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0)';
+                        });
+                        resultsContainer2.appendChild(cardDiv);
+                    });
+                } else if (data.nameResults && data.nameResults.results.length > 0) {
+                    const nameResults = data.nameResults.results;
+                    nameResults.forEach(nameResult => {
+                        const resultDiv = document.createElement('div');
+                        cardDiv.classList.add('col-md-1', 'm-1', 'card');
+                        cardDiv.innerHTML = `
+                            <h6>${nameResult.displayNameText}</h6>
+                                ${nameResult.avatarImageModel && nameResult.avatarImageModel.url
+                                ? `<img src="${nameResult.avatarImageModel.url}" alt="${nameResult.displayNameText} Avatar" style="height:250px; max-width:350px">`
+                                : 'No image available'}`;
+                        resultsContainer2.appendChild(cardDiv);
+                    });
+                } else {
+                    resultsContainer2.textContent = 'No results found';
+                }
+            } else {
+                resultsContainer2.textContent = 'No data received';
+            }
+        }
+    </script>
+
+    <!--PAGE 2--->
+
+    <script>
+        function searchIMDb() {
+            const searchInput = document.getElementById('searchInput').value;
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+            xhr.addEventListener('readystatechange', function () {
+                if (this.readyState === this.DONE) {
+                    const data = JSON.parse(this.responseText);
+                    displayResults(data);
+                    console.log(data);
+                }
+            });
+            xhr.open('GET', `https://imdb146.p.rapidapi.com/v1/find/?query=${searchInput}`);
+            xhr.setRequestHeader('X-RapidAPI-Key', '204b0b2611mshe649b213270d024p18515cjsnd3250a2a7578');
+            xhr.setRequestHeader('X-RapidAPI-Host', 'imdb146.p.rapidapi.com');
+            xhr.send();
+        }
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+            if (data) {
+                if (data.titleResults && data.titleResults.results.length > 0) {
+                    const titleResults = data.titleResults.results;
+                    titleResults.forEach(titleResult => {
+
+                        const cardDiv = document.createElement('div');
+                        cardDiv.classList.add('col-md-3', 'm-2', 'p-1', 'card');
+                        cardDiv.innerHTML = `
+                        
+                        ${titleResult.titlePosterImageModel && titleResult.titlePosterImageModel.url
+                                ? `<img class="bd-placeholder-img" src="${titleResult.titlePosterImageModel.url}" alt="${titleResult.titleNameText} Poster" style="height:200px; max-width:250px">`
+                                : 'No image available'}
+                        <h4><u>${titleResult.titleNameText}</u></h4>
+                        <p>Release Year: ${titleResult.titleReleaseText}</p>
+                        <p>Type: ${titleResult.titleTypeText}</p>
+                        <p>Top Credits: ${titleResult.topCredits.join(', ')}</p>`;
+                        cardDiv.style.height = '410px';
+                        cardDiv.style.minHeight = '250px';
+                        cardDiv.style.width = '250px';
+                        cardDiv.style.minWidth = '200px';
+                        cardDiv.style.borderRadius = '10px';
+                        cardDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 2)';
+                        cardDiv.style.transition = 'box-shadow 0.3s ease-in-out';
+
+                        // Add hover effect
+                        cardDiv.addEventListener('mouseenter', function () {
+                            cardDiv.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 10)';
+                        });
+
+                        cardDiv.addEventListener('mouseleave', function () {
+                            cardDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 2)';
+                        });
+
+
+                        resultsContainer.appendChild(cardDiv);
+                    });
+
+                } else if (data.nameResults && data.nameResults.results.length > 0) {
+                    const nameResults = data.nameResults.results;
+                    nameResults.forEach(nameResult => {
+                        const resultDiv = document.createElement('div');
+                        cardDiv.classList.add('col-md-2', 'm-1', 'card');
+
+                        cardDiv.innerHTML = `
+                            <h3>${nameResult.displayNameText}</h3>
+                            <p>Known For: ${nameResult.knownForTitleText}
+                            (${nameResult.knownForTitleYear})</p>
+                                ${nameResult.avatarImageModel && nameResult.avatarImageModel.url
+                                ? `<img src="${nameResult.avatarImageModel.url}" alt="${nameResult.displayNameText} Avatar" style="height:250px; max-width:350px">`
+                                : 'No image available'}`;
+                        resultsContainer.appendChild(cardDiv);
+                    });
+                } else {
+                    resultsContainer.textContent = 'No results found';
+                }
+            } else {
+                resultsContainer.textContent = 'No data received';
+            }
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
